@@ -1,6 +1,7 @@
 const {execSync} = require('child_process');
 const fs = require('fs');
 const express = require('express');
+const { exit } = require('process');
 
 const app = express();
 const database = 'speedtests.txt';
@@ -48,6 +49,14 @@ app.get('/data', (req, res)=> {
 app.delete('/reset', (req, res)=>{
     fs.writeFileSync(database, '');
 })
+//make sure the database exists
+try {
+    execSync(`touch ${database}`);
+}catch(err) {
+    console.error(`something went wrong: \n\x1b[31m${err}\x1b39m`);
+    exit(1);
+}
+//start the server
 const server = app.listen(8080, console.log("\x1b[92mserver listening on port 8080\x1b[39m"));
 //test speed each period
 setInterval(runSpeedtest, period)
